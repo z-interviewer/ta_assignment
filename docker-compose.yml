@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  api:
+    build: api
+    command: flask run --host=0.0.0.0
+    volumes:
+      - ./api:/backend
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=app.py
+    ports:
+      - "5000:5000"
+
+  client:
+    build: client
+    command: npm start
+    volumes:
+      - ./client:/frontend
+      - node-modules:/frontend/node_modules
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+  tests:
+    build: cypress
+    depends_on:
+      - api
+      - client
+    command: bash -c "npx cypress run --browser chrome && npx cypress run --browser edge && npx cypress run --browser firefox"
+    volumes:
+      - ./cypress:/tests/cypress
+      - ./cypress.json:/tests/cypress.json
