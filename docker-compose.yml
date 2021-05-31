@@ -3,7 +3,7 @@ version: "3.9"
 services:
   api:
     build: api
-    command: ["flask", "run", "--host=0.0.0.0"]
+    command: [ "flask", "run", "--host=0.0.0.0" ]
     volumes:
       - ./api:/backend
     environment:
@@ -14,7 +14,7 @@ services:
 
   client:
     build: client
-    command: ["npm", "start"]
+    command: [ "npm", "start" ]
     volumes:
       - ./client:/frontend
       - node-modules:/frontend/node_modules
@@ -25,16 +25,35 @@ services:
     depends_on:
       - api
 
-  cypress:
+  cypress_firefox:
     build: cypress
     depends_on:
       - api
       - client
-    command: npx cypress run
+    command: npx cypress run --browser firefox
     volumes:
       - ./cypress:/tests/cypress
       - ./cypress.json:/tests/cypress.json
 
+  cypress_chrome:
+    build: cypress
+    depends_on:
+      - api
+      - client
+    command: npx cypress run --browser chrome
+    volumes:
+      - ./cypress:/tests/cypress
+      - ./cypress.json:/tests/cypress.json
+
+  cypress_edge:
+    build: cypress
+    depends_on:
+      - api
+      - client
+    command: npx cypress run --browser edge
+    volumes:
+      - ./cypress:/tests/cypress
+      - ./cypress.json:/tests/cypress.json
 
 volumes:
   node-modules:
